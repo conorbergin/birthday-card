@@ -32,6 +32,7 @@
             /* flex-wrap:wrap; */
             display:grid;
             grid-template-columns: repeat(6,20px);
+            /* grid-template-rows: repeat(auto,20px); */
             gap: 10px;
             justify-content: center;
             align-content: center;
@@ -87,12 +88,12 @@
         }
 
 
-        n = parseInt(getQueryParam('count')) || 36
+        n = parseInt(getQueryParam('count')) || 100
 
         function drawCandles() {
             const container = document.getElementById('candleContainer');
             container.innerHTML = '';
-            // container.style.gridTemplateColumns = `repeat(${Math.min(10,Math.ceil(Math.sqrt(n)))}, 50px)`;
+            container.style.gridTemplateColumns = `repeat(${Math.min(10,Math.ceil(Math.sqrt(n)))}, 20px)`;
             // container.style.gridTemplateRows = `repeat(auto-fill, 60px)`;
             for (let i = 0; i < n; i++) {
                 const candle = document.createElement('div');
@@ -131,11 +132,11 @@
                     if (pointerDown) {
                         // scale = scale - 10*1/distance
                         // skew = Math.min(4000/distance,20)
-                        offsetX -= dx/distance *2*clamp(100-distance/2,10,0)
-                        offsetY -= dy/distance*2*clamp(100-distance/2,10,0)
+                        offsetX -= dx/distance*clamp(100-distance/2,10,0)
+                        offsetY -= dy/distance*clamp(100-distance/2,10,0)
                     }
 
-                    candle.style.transform = `translate(${offsetX}px, ${offsetY}px) scale(${scale}) skew(${-dx*0.01*skew}deg,${-dy*0.001*skew}deg)`;
+                    candle.style.transform = `translate(${offsetX}px, ${offsetY}px) scale(1.2)`;
                 }
 
             });
