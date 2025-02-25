@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>candle Drawer</title>
+    <style>
+        body {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background-color: black;
+            color:white;
+        }
+
+        .container {
+            padding:10px;
+            display: grid;
+            gap: 20px;
+            justify-content: center;
+            align-content: center;
+            background-color: pink;
+            border:solid pink 10px;
+            border-radius: 10px;
+        }
+
+        .candle {
+            width: 30px;
+            height: 30px;
+            border: solid red 10px;
+            background-color: orange;
+            border-radius: 50%;
+            transition: width 0.1s, height 0.1s, transform 0.1s;
+            transform-origin: center;
+            /* place-self: center; */
+
+        }
+
+        .square {
+            width: 4px;
+            height: 4px;
+            border: solid white 23px;
+            border-radius:50%;
+            background-color: black;
+            place-self: center;
+        }
+
+        button {
+            margin-bottom: 10px;
+            padding: 10px 20px;
+            font-size: 16px;
+            cursor: pointer;
+        }
+    </style>
+</head>
+
+<body>
+    <h1>Dear Dad</h1>
+    <div class="container" id="candleContainer"></div>
+    <h1>Happy birthday</h1>
+    <h1>Love Conor</h1>
+    <script>
+        let pointerDown = false;
+        let pointerX = 0;
+        let pointerY = 0;
+
+        function getQueryParam(name) {
+            const urlParams = new URLSearchParams(window.location.search);
+            return urlParams.get(name);
+        }
+
+
+        n = parseInt(getQueryParam('count')) || 36
+
+        function drawCandles() {
+            const container = document.getElementById('candleContainer');
+            container.innerHTML = '';
+            container.style.gridTemplateColumns = `repeat(${Math.min(10,Math.ceil(Math.sqrt(n)))}, 50px)`;
+            // container.style.gridTemplateRows = `repeat(auto-fill, 60px)`;
+            for (let i = 0; i < n; i++) {
+                const candle = document.createElement('div');
+                candle.classList.add('candle');
+                container.appendChild(candle);
+            }
+        }
+
+        function clamp(val,max,min) {
+            return Math.max(min,Math.min(max,val))
+        }
+
+        function updateCandles() {
+            const candles = document.querySelectorAll('.candle');
+            candles.forEach(candle => {
+                const rect = candle.getBoundingClientRect();
+                const centerX = rect.left + rect.width / 2;
+                const centerY = rect.top + rect.height / 2;
+
+                const dx = pointerX - centerX
+                const dy = pointerY - centerY
+
+
+                const distance = Math.sqrt((pointerX - centerX) ** 2 + (pointerY - centerY) ** 2);
+
+                if (pointerDown && distance < 80) {
+                    candle.classList.remove('candle');
+                    candle.classList.add('square');
+                    candle.style.transform = '';
+                } else {
+                    var scale = Math.random() * 0.2 + 1; // Random size variation
+
+                    var offsetX = (Math.random() - 0.5) * 2 ; // Random offset between -1px and 1px
+                    var offsetY = (Math.random() - 0.5) * 2;
+                    var skew = 0
+                    if (pointerDown) {
+                        // scale = scale - 10*1/distance
+                        // skew = Math.min(4000/distance,20)
+                        offsetX -= dx/distance *2*clamp(100-distance/2,10,0)
+                        offsetY -= dy/distance*2*clamp(100-distance/2,10,0)
+                    }
+
+                    candle.style.transform = `translate(${offsetX}px, ${offsetY}px) scale(${scale}) skew(${-dx*0.01*skew}deg,${-dy*0.001*skew}deg)`;
+                }
+
+            });
+            setTimeout(updateCandles, 60); // Approx 30 FPS
+        }
+
+        function resetCandles() {
+            drawCandles();
+        }
+
+        document.addEventListener('pointerdown', (event) => {
+            pointerDown = true;
+            pointerX = event.clientX;
+            pointerY = event.clientY;
+        });
+
+        document.addEventListener('pointermove', (event) => {
+            if (pointerDown) {
+                pointerX = event.clientX;
+                pointerY = event.clientY;
+            }
+        });
+
+        document.addEventListener('pointerup', () => {
+            pointerDown = false;
+        });
+
+        drawCandles();
+        updateCandles();
+    </script>
+</body>
+
+</html>
